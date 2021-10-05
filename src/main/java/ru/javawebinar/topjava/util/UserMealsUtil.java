@@ -30,8 +30,13 @@ public class UserMealsUtil {
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         Map<LocalDate, Integer> datesWithCaloriesPerDay = getDatesWithCaloriesPerDay(meals);
-        List<UserMealWithExcess> userMealWithExcesses = getUserMealsWithExcess(meals, caloriesPerDay, datesWithCaloriesPerDay);
-        return filteredByInterval(startTime, endTime, userMealWithExcesses);
+        List<UserMealWithExcess> listOfUserMealsWithExcess = getListOfUserMealsWithExcess(meals, caloriesPerDay, datesWithCaloriesPerDay);
+        List<UserMealWithExcess> userMealsWithExcess = getMealsWithExcess(listOfUserMealsWithExcess);
+        return filteredByInterval(startTime, endTime, userMealsWithExcess);
+    }
+
+    private static List<UserMealWithExcess> getMealsWithExcess(List<UserMealWithExcess> listOfUserMealsWithExcess) {
+        return listOfUserMealsWithExcess.stream().filter(UserMealWithExcess::isExcess).collect(Collectors.toList());
     }
 
     private static Map<LocalDate, Integer> getDatesWithCaloriesPerDay(List<UserMeal> meals) {
@@ -45,7 +50,7 @@ public class UserMealsUtil {
         return datesWithTotalCalories;
     }
 
-    private static List<UserMealWithExcess> getUserMealsWithExcess(List<UserMeal> meals, int caloriesPerDay, Map<LocalDate, Integer> datesWithTotalCalories) {
+    private static List<UserMealWithExcess> getListOfUserMealsWithExcess(List<UserMeal> meals, int caloriesPerDay, Map<LocalDate, Integer> datesWithTotalCalories) {
         List<UserMealWithExcess> userMealsWithExcesses = new ArrayList<>();
         for (UserMeal meal : meals) {
             LocalDate actualDate = LocalDate.from(meal.getDateTime());
